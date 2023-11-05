@@ -1,0 +1,8 @@
+---
+- name: Pull Docker image from DockerHub
+  docker_image:
+    name: "{{ docker_image_name }}:{{ docker_image_version }}"
+    source: pull
+    docker_host: "unix://var/run/docker.sock"
+  become: yes
+

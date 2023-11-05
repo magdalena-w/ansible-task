@@ -1,0 +1,7 @@
+---
+- name: Start Docker container
+  docker_container:
+    name: spring-petclinic
+    state: started
+  become: yes
+

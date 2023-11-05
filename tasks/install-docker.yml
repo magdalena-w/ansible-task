@@ -1,0 +1,26 @@
+---
+- name: Install Docker
+  yum:
+    name: docker
+    state: present
+  become: yes
+  register: docker_installed
+
+- name: Start the Docker service
+  service:
+    name: docker
+    state: started
+  become: yes
+  when: docker_installed.changed
+
+- name: Add user to the docker group
+  user:
+    name: ec2-user
+    groups: docker
+  become: yes
+  when: docker_installed.changed
+
+- name: Set fact for Docker installed status
+  set_fact:
+    is_docker_installed: "{{ docker_installed.changed }}"
+

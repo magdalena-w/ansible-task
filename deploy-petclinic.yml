@@ -1,0 +1,38 @@
+---
+- name: Deploy Spring PetClinic Application
+  hosts: app-server
+  become: yes
+
+  vars:
+    docker_image_name: "magdalena01/spring-petclinic-multistage"
+    docker_image_version: "spring-petclinic"
+
+  tasks:
+    - name: Include install Docker task
+      import_tasks: tasks/install-docker.yml
+    
+    - name: Check if Docker is installed
+      command: "docker --version"
+      register: docker_check
+      ignore_errors: true
+
+    - name: Set 'is_docker_installed' fact
+      set_fact:
+        is_docker_installed: "{{ docker_check.rc == 0 }}"
+
+    - name: Continue with other tasks
+      debug:
+        msg: "Docker is already installed"
+
+    - name: Pull Docker image from DockerHub
+      import_tasks: tasks/pull-docker-image.yml
+      vars:
+        docker_image_name: magdalena01/spring-petclinic-multistage
+        docker_image_version: spring-petclinic
+
+    - name: Create a Docker container
+      import_tasks: tasks/create-docker-container.yml
+
+    - name: Start the Docker container
+      import_tasks: tasks/start-docker-container.yml
+
